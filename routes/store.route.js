@@ -5,11 +5,13 @@ const {
   createNewStore,
   updateNewStore,
   deleteStore,
+  getCommonLength,
 } = require("../controllers/store.controller");
 const storeRouter = express.Router();
 
 storeRouter.get("/", getAllStores);
-storeRouter.post("/", verifyToken, createNewStore);
+storeRouter.get("/common-length", getCommonLength);
+storeRouter.post("/create-store", createNewStore);
 storeRouter.put("/:id", verifyToken, updateNewStore);
 storeRouter.delete("/:id", verifyToken, deleteStore);
 

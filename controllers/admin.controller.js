@@ -1,5 +1,4 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
 const Joi = require("joi");
 const prisma = require("../config/prismaClient");
 
@@ -33,7 +32,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { name, email, password, address, phone, role } = value;
+    const { name, email, password, address, role } = value;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -47,16 +46,15 @@ const createUser = async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword,
+        password,
         address,
-        phone,
         role,
       },
       select: {
@@ -65,7 +63,6 @@ const createUser = async (req, res) => {
         email: true,
         role: true,
         address: true,
-        phone: true,
         createdAt: true,
       },
     });
@@ -301,4 +298,13 @@ const getAllUsers = async (req, res) => {
     console.error("Get users error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+
+module.exports = {
+  createUser,
+  getAllStoresForAdmin,
+  deleteUserByAdmin,
+  updateUser,
+  getAllUsers,
 };

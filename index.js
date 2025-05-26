@@ -3,6 +3,11 @@ const prisma = require("./config/prismaClient");
 const userRouter = require("./routes/user.route");
 const storeRouter = require("./routes/store.route");
 const ratingRouter = require("./routes/rating.route");
+const helmet = require("helmet");
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
+const authRouter = require("./routes/auth.route");
+
 require("dotenv").config();
 
 const app = express();
@@ -12,19 +17,19 @@ const port = process.env.PORT || 3000;
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:5000",
     credentials: true,
   })
 );
 
-const limiter = rateLimit({
-  windowMs: 16 * 60 * 100,
-  max: 10,
-  message: "Too many requests from this IP, please try again later.",
-});
+// const limiter = rateLimit({
+//   windowMs: 16 * 60 * 100,
+//   max: 10,
+//   message: "Too many requests from this IP, please try again later.",
+// });
 
-app.use(limiter);
-
+// app.use(limiter);
+// 
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
