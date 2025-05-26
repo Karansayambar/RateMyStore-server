@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const prisma = require("../config/prismaClient");
-const { verifyToken } = require("../middleware/auth");
+const { verifyToken } = require("../middleware/verifyToken");
 
 // Validation schemas
 const createRatingSchema = Joi.object({
@@ -176,7 +176,7 @@ const getAllRating = async (req, res) => {
   }
 };
 
-const updateRating = async (res, res) => {
+const updateRating = async (req, res) => {
   try {
     const ratingId = parseInt(req.params.id);
     const { error, value } = updateRatingSchema.validate(req.body);

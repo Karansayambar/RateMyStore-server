@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,51 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  address   String
-  role      Role
-  ratings   Rating[]
-  stores    Store[]   @relation("StoreOwner")
-   createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-    @@map("users")
-
+model Rating {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  userId    Int
+  storeId   Int
+  createdAt DateTime @default(now())
+  Store     Store    @relation(fields: [storeId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
 }
 
 model Store {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
   email     String
   address   String
-  ratings   Rating[]
   ownerId   Int
-  owner     User      @relation("StoreOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-@@map("stores")
+  createdAt DateTime @default(now())
+  Rating    Rating[]
+  User      User     @relation(fields: [ownerId], references: [id])
 }
 
-
-model Rating {
-  id        Int       @id @default(autoincrement())
-  rating    Int       // 1 to 5
-  userId    Int
-  storeId   Int
-  user      User      @relation(fields: [userId], references: [id])
-  store     Store     @relation(fields: [storeId], references: [id])
-  createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-
-  @@unique([userId, storeId])
-  @@map("ratings")
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  address   String
+  role      Role
+  createdAt DateTime @default(now())
+  Rating    Rating[]
+  Store     Store[]
 }
-
-
 
 enum Role {
   ADMIN

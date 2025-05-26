@@ -8,6 +8,43 @@ const updateProfileSchema = Joi.object({
   phone: Joi.string().max(20).optional(),
 });
 
+const getAllUsers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const users = await prisma.user.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        address: true,
+        createdAt: true,
+      },
+    });
+
+    const totalUsers = await prisma.user.count();
+
+    res.json({
+      users,
+      pagination: {
+        page,
+        limit,
+        total: totalUsers,
+        pages: Math.ceil(totalUsers / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Get all users error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 // get user profile
 
 const getUserProfile = async (req, res) => {
@@ -185,4 +222,5 @@ module.exports = {
   getStores,
   getUserRating,
   userStatistic,
+  getAllUsers
 };
